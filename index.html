@@ -1,12 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TENIO Fragment Sepolia</title>
-</head>
-<body>
-  <div id="app"></div>
-  <script type="module" src="/main.js"></script>
-</body>
-</html>
+<!-- 🔁 Reemplaza este bloque por el botón actual de minteo -->
+
+<style>
+  .holo-sphere {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #0ff;
+    box-shadow: 0 0 25px #0ff, inset 0 0 30px rgba(0, 255, 255, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+
+  .holo-sphere:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 35px #0ff, inset 0 0 45px rgba(0, 255, 255, 0.5);
+  }
+
+  .holo-sphere video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>
+
+<div class="holo-sphere" onclick="mintFragment()" onmouseenter="playHolo()" onmouseleave="pauseHolo()">
+  <video id="holoVideo" preload="auto">
+    <source src="https://ipfs.io/ipfs/bafybeigftt7kun6fq3hlpahoxdnxy2nn54gjhkdgkyhch2yzilqfpet27a" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</div>
+
+<script>
+  const holo = document.getElementById("holoVideo");
+  function playHolo() {
+    holo.volume = 1.0;
+    holo.play();
+  }
+
+  function pauseHolo() {
+    holo.pause();
+    holo.currentTime = 0;
+  }
+</script>
