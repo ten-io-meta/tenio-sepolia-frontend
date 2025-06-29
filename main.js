@@ -1,63 +1,58 @@
-import { ethers } from "ethers";
+import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js";
 
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
+const connectButton = document.getElementById("connectButton");
+const mintButton = document.getElementById("mintButton");
+const burnButton = document.getElementById("burnButton");
+const statusText = document.getElementById("status");
 
-const ABI = [
+let account;
+let contract;
+
+const contractAddress = "0xD360714b72796dC812A0c177B9Be45022D1f3f5B";
+const abi = [
   "function mintFragment(string memory uri) external payable",
-  "function burn(uint256 tokenId) external",
-  "function tokenURI(uint256 tokenId) public view returns (string memory)",
-  "function ownerOf(uint256 tokenId) public view returns (address)",
-  "function tokenIds() view returns (uint256)",
+  "function burn(uint256 tokenId) external"
 ];
 
-const connectWallet = async () => {
-  if (!window.ethereum) {
-    alert("MetaMask not found");
-    return;
+connectButton.onclick = async () => {
+  if (window.ethereum) {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
+    account = await signer.getAddress();
+    contract = new ethers.Contract(contractAddress, abi, signer);
+    connectButton.innerText = `Conectado: ${account.slice(0, 6)}...`;
+    statusText.innerText = "MetaMask conectado";
+  } else {
+    alert("MetaMask no está instalado");
   }
-
-  const provider = new ethers.BrowserProvider(window.ethereum);
-  const signer = await provider.getSigner();
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-
-  window.contract = contract;
-  window.signer = signer;
-  window.provider = provider;
-
-  const address = await signer.getAddress();
-  document.getElementById("wallet").innerText = "🟢 " + address.slice(0, 6) + "..." + address.slice(-4);
 };
 
-const mint = async () => {
-  const uri = prompt("IPFS URI:");
-  if (!uri) return;
-
-  const tx = await window.contract.mintFragment(uri, {
-    value: ethers.parseEther("0.12"),
-  });
-
-  await tx.wait();
-  alert("Minted!");
+mintButton.onclick = async () => {
+  if (!contract) return alert("Conecta MetaMask primero");
+  try {
+    const tx = await contract.mintFragment(
+      "ipfs://bafkreidacdfc6dk3pwrsi7sgjd7wcacbsjvla4zbewdp54tknsjeyzpfvm",
+      { value: ethers.utils.parseEther("0.12") }
+    );
+    await tx.wait();
+    statusText.innerText = "Fragmento minteado con éxito";
+  } catch (e) {
+    console.error(e);
+    statusText.innerText = "Error al mintear";
+  }
 };
 
-const burn = async () => {
-  const id = prompt("Token ID to burn:");
-  if (!id) return;
-
-  const tx = await window.contract.burn(id);
-  await tx.wait();
-  alert("Burned and refunded!");
+burnButton.onclick = async () => {
+  if (!contract) return alert("Conecta MetaMask primero");
+  const tokenId = prompt("Introduce el ID del fragmento a quemar");
+  if (!tokenId) return;
+  try {
+    const tx = await contract.burn(tokenId);
+    await tx.wait();
+    statusText.innerText = "Fragmento quemado con éxito";
+  } catch (e) {
+    console.error(e);
+    statusText.innerText = "Error al quemar";
+  }
 };
-
-document.body.innerHTML = `
-  <h1>TEN.IO Fragment (Sepolia)</h1>
-  <button onclick="connectWallet()">Conectar Wallet</button>
-  <span id="wallet">🔴 Desconectado</span>
-  <br/><br/>
-  <button onclick="mint()">Mintear fragmento (0.12 ETH)</button>
-  <button onclick="burn()">Quemar fragmento</button>
-`;
-
-window.connectWallet = connectWallet;
-window.mint = mint;
-window.burn = burn;

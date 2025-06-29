@@ -1,76 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>TEN.IO Fragment (Sepolia)</title>
-    <style>
-      body {
-        font-family: sans-serif;
-        background: white;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding-top: 60px;
-      }
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>TEN.IO Fragment</title>
+</head>
+<body style="text-align:center; margin-top:100px;">
+  <h1>TEN.IO Fragment</h1>
+  <button id="connectButton">Conectar billetera</button><br /><br />
+  <button id="mintButton">Mintear fragmento</button><br /><br />
+  <button id="burnButton">Quemar fragmento</button>
+  <p id="status"></p>
 
-      .circle {
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        background: radial-gradient(#00fdfd, transparent 70%);
-        margin-bottom: 30px;
-      }
-
-      button {
-        padding: 12px 20px;
-        margin: 8px;
-        font-size: 16px;
-        border: none;
-        border-radius: 8px;
-        background: black;
-        color: white;
-        cursor: pointer;
-      }
-
-      #status, #fragmentCount {
-        margin: 5px 0;
-        font-weight: bold;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="circle"></div>
-
-    <button onclick="connectWallet()">Conectar Wallet</button>
-    <div id="status"><span style="color: red">🔴 Desconectado</span></div>
-    <div id="fragmentCount">Fragmentos vivos: 1000</div>
-
-    <button onclick="mintFragment()">Mintear fragmento (0.12 ETH)</button>
-    <button onclick="burnFragment()">Quemar fragmento</button>
-
-    <script>
-      let fragmentCount = 1000;
-
-      function connectWallet() {
-        document.getElementById("status").innerHTML =
-          '<span style="color: green">🟢 0x75DA...C455</span>';
-      }
-
-      function mintFragment() {
-        alert("Mint enviado a Sepolia (demo). Confirmar en MetaMask.");
-      }
-
-      function burnFragment() {
-        if (fragmentCount > 0) {
-          fragmentCount--;
-          document.getElementById("fragmentCount").textContent =
-            "Fragmentos vivos: " + fragmentCount;
-          alert("Burn enviado a Sepolia (demo). Confirmar en MetaMask.");
-        } else {
-          alert("Ya no quedan fragmentos disponibles.");
-        }
-      }
-    </script>
-  </body>
+  <script type="module" src="main.js"></script>
+</body>
 </html>
