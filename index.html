@@ -134,6 +134,35 @@
         alert("Error en burn: " + err.message);
       }
     }
-  </script>
-</body>
-</html>
+  <script>
+  const holo = document.getElementById('holo');
+  const audio = document.getElementById('hover-sound');
+
+  let audioEnabled = false;
+
+  // Permitir audio después de una interacción del usuario
+  document.body.addEventListener('click', () => {
+    audioEnabled = true;
+  });
+
+  holo.addEventListener('mouseenter', () => {
+    if (audioEnabled) {
+      audio.currentTime = 0;
+      audio.play().catch(e => console.log("Autoplay error:", e));
+    }
+  });
+
+  // Simulación de conexión a wallet
+  function connectWallet() {
+    document.getElementById("status").innerHTML =
+      '<span style="color: green">🟢 0x75DA...C455</span>';
+  }
+
+  function mintFragment() {
+    alert("Mint enviado a Sepolia (demo). Confirmar en MetaMask.");
+  }
+
+  function burnFragment() {
+    alert("Burn enviado a Sepolia (demo). Confirmar en MetaMask.");
+  }
+</script>
