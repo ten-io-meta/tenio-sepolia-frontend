@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>TEN.IO Fragment (Sepolia)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TEN.IO Fragment (Sepolia)</title>
     <style>
       body {
         margin: 0;
@@ -11,17 +11,17 @@
         font-family: sans-serif;
         background: #fff;
         display: flex;
-        flex-direction: column;
-        align-items: center;
         justify-content: center;
+        align-items: center;
+        flex-direction: column;
         height: 100vh;
       }
 
       .hologram-container {
         position: relative;
-        width: 280px;
-        height: 280px;
-        margin-bottom: 30px;
+        width: 300px;
+        height: 300px;
+        margin-bottom: 40px;
         perspective: 1000px;
       }
 
@@ -31,13 +31,8 @@
         border-radius: 50%;
         overflow: hidden;
         box-shadow: 0 0 50px #00fdfd, 0 0 80px #00fdfd inset;
-        transform-style: preserve-3d;
-        animation: spin 10s linear infinite;
-        transition: transform 0.3s ease-in-out;
-      }
-
-      .hologram:hover {
-        transform: rotateY(180deg);
+        transition: transform 0.5s;
+        animation: rotate 10s infinite linear;
       }
 
       .hologram video {
@@ -46,9 +41,13 @@
         object-fit: cover;
       }
 
-      @keyframes spin {
-        0% { transform: rotateY(0deg); }
-        100% { transform: rotateY(360deg); }
+      @keyframes rotate {
+        from {
+          transform: rotateY(0deg);
+        }
+        to {
+          transform: rotateY(360deg);
+        }
       }
 
       button {
@@ -60,10 +59,11 @@
         cursor: pointer;
         background-color: black;
         color: white;
+        transition: background-color 0.3s;
       }
 
       button:hover {
-        background-color: #222;
+        background-color: #111;
       }
 
       #status {
@@ -75,7 +75,7 @@
   <body>
     <div class="hologram-container">
       <div class="hologram" id="holo">
-        <video src="hologram.mp4" autoplay loop muted playsinline></video>
+        <video src="/hologram.mp4" autoplay loop muted playsinline></video>
       </div>
     </div>
 
@@ -84,31 +84,31 @@
     <button onclick="mintFragment()">Mintear fragmento (0.12 ETH)</button>
     <button onclick="burnFragment()">Quemar fragmento</button>
 
-    <audio id="hover-sound" src="hologram.mp3" preload="auto"></audio>
+    <audio id="hover-sound" src="/hologram.mp3" preload="auto"></audio>
 
-<script>
-  const holo = document.getElementById('holo');
-  const audio = document.getElementById('hover-sound');
+    <script>
+      const holo = document.getElementById("holo");
+      const audio = document.getElementById("hover-sound");
 
-  holo.addEventListener("mouseenter", () => {
-    if (audio.readyState >= 2) {
-      audio.currentTime = 0;
-      audio.play().catch(e => console.warn("Autoplay blocked:", e));
-    }
-  });
+      holo.addEventListener("mouseenter", () => {
+        if (audio.readyState >= 2) {
+          audio.currentTime = 0;
+          audio.play().catch(e => console.warn("Autoplay blocked:", e));
+        }
+      });
 
-  function connectWallet() {
-    document.getElementById("status").innerHTML =
-      '<span style="color: green">🟢 0x75DA...C455</span>';
-  }
+      function connectWallet() {
+        document.getElementById("status").innerHTML =
+          '<span style="color: green">🟢 0x75DA...C455</span>';
+      }
 
-  function mintFragment() {
-    alert("Mint enviado a Sepolia (demo). Confirmar en MetaMask.");
-  }
+      function mintFragment() {
+        alert("Mint enviado a Sepolia (demo). Confirmar en MetaMask.");
+      }
 
-  function burnFragment() {
-    alert("Burn enviado a Sepolia (demo). Confirmar en MetaMask.");
-  }
-</script>
+      function burnFragment() {
+        alert("Burn enviado a Sepolia (demo). Confirmar en MetaMask.");
+      }
+    </script>
   </body>
 </html>
