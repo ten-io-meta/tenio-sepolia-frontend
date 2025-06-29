@@ -32,7 +32,12 @@
         overflow: hidden;
         box-shadow: 0 0 50px #00fdfd, 0 0 80px #00fdfd inset;
         transition: transform 0.5s;
+        transform-style: preserve-3d;
         animation: rotate 10s infinite linear;
+      }
+
+      .hologram:hover {
+        transform: rotateY(180deg);
       }
 
       .hologram video {
@@ -75,7 +80,7 @@
   <body>
     <div class="hologram-container">
       <div class="hologram" id="holo">
-      <video src="/hologram-v1.mp4" autoplay loop muted playsinline></video>
+        <video src="/hologram.mp4" autoplay loop muted playsinline></video>
       </div>
     </div>
 
@@ -87,16 +92,15 @@
     <audio id="hover-sound" src="/hologram.mp3" preload="auto"></audio>
 
     <script>
-      const holo = document.getElementById("holo");
-      const audio = document.getElementById("hover-sound");
+      const holo = document.getElementById('holo');
+      const audio = document.getElementById('hover-sound');
 
-      holo.addEventListener("mouseenter", () => {
-        if (audio.readyState >= 2) {
-          audio.currentTime = 0;
-          audio.play().catch(e => console.warn("Autoplay blocked:", e));
-        }
+      holo.addEventListener('mouseenter', () => {
+        audio.currentTime = 0;
+        audio.play();
       });
 
+      // Simulación de conexión a wallet
       function connectWallet() {
         document.getElementById("status").innerHTML =
           '<span style="color: green">🟢 0x75DA...C455</span>';
