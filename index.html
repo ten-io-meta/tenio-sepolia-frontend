@@ -6,52 +6,38 @@
     <title>TEN.IO Fragment (Sepolia)</title>
     <style>
       body {
-        margin: 0;
-        padding: 0;
         font-family: sans-serif;
         background: #fff;
         display: flex;
-        justify-content: center;
-        align-items: center;
         flex-direction: column;
-        height: 100vh;
+        align-items: center;
+        padding: 50px;
       }
-
-      .hologram-placeholder {
-        width: 300px;
-        height: 300px;
+      .circle {
+        width: 200px;
+        height: 200px;
         border-radius: 50%;
-        margin-bottom: 40px;
-        background: radial-gradient(circle, #ffffff 20%, #00fdfd 60%, transparent 100%);
-        box-shadow: 0 0 60px #00fdfd;
+        background: radial-gradient(#00fdfd, transparent);
+        margin-bottom: 30px;
       }
-
       button {
-        padding: 12px 20px;
-        margin: 10px;
+        padding: 10px 20px;
+        margin: 8px;
+        font-size: 16px;
+        background: black;
+        color: white;
         border: none;
         border-radius: 8px;
-        font-size: 16px;
         cursor: pointer;
-        background-color: black;
-        color: white;
       }
-
-      #status {
-        margin-top: 10px;
+      #status, #fragmentCount {
+        margin: 5px 0;
         font-weight: bold;
-      }
-
-      #fragmentCount {
-        margin-top: -8px;
-        font-size: 14px;
-        color: #333;
-        text-align: center;
       }
     </style>
   </head>
   <body>
-    <div class="hologram-placeholder"></div>
+    <div class="circle"></div>
 
     <button onclick="connectWallet()">Conectar Wallet</button>
     <div id="status"><span style="color: red">🔴 Desconectado</span></div>
@@ -61,12 +47,11 @@
     <button onclick="burnFragment()">Quemar fragmento</button>
 
     <script>
-      const status = document.getElementById("status");
-      const count = document.getElementById("fragmentCount");
-      let fragmentos = 1000;
+      let fragmentCount = 1000;
 
       function connectWallet() {
-        status.innerHTML = '<span style="color: green">🟢 0x75DA...C455</span>';
+        document.getElementById("status").innerHTML =
+          '<span style="color: green">🟢 0x75DA...C455</span>';
       }
 
       function mintFragment() {
@@ -74,12 +59,13 @@
       }
 
       function burnFragment() {
-        if (fragmentos > 0) {
-          fragmentos--;
-          count.textContent = "Fragmentos vivos: " + fragmentos;
+        if (fragmentCount > 0) {
+          fragmentCount--;
+          document.getElementById("fragmentCount").textContent =
+            "Fragmentos vivos: " + fragmentCount;
           alert("Burn enviado a Sepolia (demo). Confirmar en MetaMask.");
         } else {
-          alert("No quedan fragmentos.");
+          alert("Ya no quedan fragmentos disponibles.");
         }
       }
     </script>
