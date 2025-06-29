@@ -1,168 +1,127 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TEN.IO Fragment (Sepolia)</title>
-  <style>
-    body {
-      margin: 0;
-      background: #ffffff;
-      font-family: 'Helvetica Neue', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      color: #000;
-    }
-
-    .status {
-      margin-top: 10px;
-      font-weight: 600;
-      color: #444;
-    }
-
-    .button {
-      padding: 12px 20px;
-      margin: 10px;
-      font-size: 16px;
-      border: none;
-      background: black;
-      color: white;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .button:hover {
-      background: #333;
-    }
-
-    .hologram {
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      box-shadow: 0 0 40px cyan, 0 0 80px cyan;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 30px;
-      animation: pulse 2s infinite alternate;
-    }
-
-    @keyframes pulse {
-      from {
-        box-shadow: 0 0 30px cyan;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TEN.IO Fragment (Sepolia)</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+        background: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 100vh;
       }
-      to {
-        box-shadow: 0 0 60px cyan, 0 0 90px cyan;
+
+      .hologram-container {
+        position: relative;
+        width: 300px;
+        height: 300px;
+        margin-bottom: 40px;
+        perspective: 1000px;
       }
-    }
 
-    video {
-      width: 85%;
-      height: 85%;
-      border-radius: 50%;
-      object-fit: cover;
-      pointer-events: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="hologram">
-    <video autoplay muted loop>
-      <source src="https://gateway.pinata.cloud/ipfs/bafybeigftt7kun6fq3hlpahoxdnxy2nn54gjhkdgkyhch2yzilqfpet27a" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </div>
-
-  <button class="button" onclick="connectWallet()">Conectar Wallet</button>
-  <div id="status" class="status">🔴 Desconectado</div>
-
-  <button class="button" onclick="mintFragment()">Mintear fragmento (0.12 ETH)</button>
-  <button class="button" onclick="burnFragment()">Quemar fragmento</button>
-
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <script>
-    const CONTRACT_ADDRESS = "0xD360714b72796dC812A0c177B9Be45022D1f3f5B";
-    const ABI = [
-      "function mintFragment(string memory uri) external payable",
-      "function burn(uint256 tokenId) external",
-      "function ownerOf(uint256 tokenId) view returns (address)",
-      "function tokenURI(uint256 tokenId) view returns (string)"
-    ];
-
-    let provider;
-    let signer;
-    let contract;
-
-    async function connectWallet() {
-      if (window.ethereum) {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        signer = provider.getSigner();
-        contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-
-        const address = await signer.getAddress();
-        document.getElementById('status').innerHTML = `🟢 ${address.substring(0,6)}...${address.slice(-4)}`;
-      } else {
-        alert("MetaMask no está instalada");
+      .hologram {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 0 0 50px #00fdfd, 0 0 80px #00fdfd inset;
+        transition: transform 0.5s;
+        transform-style: preserve-3d;
+        animation: rotate 10s infinite linear;
       }
-    }
 
-    async function mintFragment() {
-      const ipfsURI = prompt("Introduce la URI de IPFS del fragmento:");
-      if (!ipfsURI) return;
-      try {
-        const tx = await contract.mintFragment(ipfsURI, { value: ethers.utils.parseEther("0.12") });
-        await tx.wait();
-        alert("✅ Fragmento minteado!");
-      } catch (err) {
-        alert("Error en mint: " + err.message);
+      .hologram:hover {
+        transform: rotateY(180deg);
       }
-    }
 
-    async function burnFragment() {
-      const tokenId = prompt("Introduce el ID del token a quemar:");
-      if (!tokenId) return;
-      try {
-        const tx = await contract.burn(tokenId);
-        await tx.wait();
-        alert("🔥 Fragmento quemado y 0.10 ETH devueltos.");
-      } catch (err) {
-        alert("Error en burn: " + err.message);
+      .hologram video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
-    }
-  <script>
-  const holo = document.getElementById('holo');
-  const audio = document.getElementById('hover-sound');
 
-  let audioEnabled = false;
+      @keyframes rotate {
+        from {
+          transform: rotateY(0deg);
+        }
+        to {
+          transform: rotateY(360deg);
+        }
+      }
 
-  // Permitir audio después de una interacción del usuario
-  document.body.addEventListener('click', () => {
-    audioEnabled = true;
-  });
+      button {
+        padding: 12px 20px;
+        margin: 10px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: black;
+        color: white;
+        transition: background-color 0.3s;
+      }
 
-  holo.addEventListener('mouseenter', () => {
-    if (audioEnabled) {
-      audio.currentTime = 0;
-      audio.play().catch(e => console.log("Autoplay error:", e));
-    }
-  });
+      button:hover {
+        background-color: #111;
+      }
 
-  // Simulación de conexión a wallet
-  function connectWallet() {
-    document.getElementById("status").innerHTML =
-      '<span style="color: green">🟢 0x75DA...C455</span>';
-  }
+      #status {
+        margin-top: 10px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hologram-container">
+      <div class="hologram" id="holo">
+        <video src="/hologram.mp4" autoplay loop muted playsinline></video>
+      </div>
+    </div>
 
-  function mintFragment() {
-    alert("Mint enviado a Sepolia (demo). Confirmar en MetaMask.");
-  }
+    <button onclick="connectWallet()">Conectar Wallet</button>
+    <div id="status"><span style="color: red">🔴 Desconectado</span></div>
+    <button onclick="mintFragment()">Mintear fragmento (0.12 ETH)</button>
+    <button onclick="burnFragment()">Quemar fragmento</button>
 
-  function burnFragment() {
-    alert("Burn enviado a Sepolia (demo). Confirmar en MetaMask.");
-  }
-</script>
+    <audio id="hover-sound" src="/hologram.mp3" preload="auto"></audio>
+
+    <script>
+      const holo = document.getElementById('holo');
+      const audio = document.getElementById('hover-sound');
+
+      let audioEnabled = false;
+
+      // Requiere una interacción para habilitar el audio (por autoplay policy)
+      document.body.addEventListener('click', () => {
+        audioEnabled = true;
+      });
+
+      holo.addEventListener('mouseenter', () => {
+        if (audioEnabled) {
+          audio.currentTime = 0;
+          audio.play().catch(e => console.log("Autoplay error:", e));
+        }
+      });
+
+      // Simulación de conexión a wallet
+      function connectWallet() {
+        document.getElementById("status").innerHTML =
+          '<span style="color: green">🟢 0x75DA...C455</span>';
+      }
+
+      function mintFragment() {
+        alert("Mint enviado a Sepolia (demo). Confirmar en MetaMask.");
+      }
+
+      function burnFragment() {
+        alert("Burn enviado a Sepolia (demo). Confirmar en MetaMask.");
+      }
+    </script>
+  </body>
+</html>
