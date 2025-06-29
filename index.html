@@ -17,20 +17,13 @@
         height: 100vh;
       }
 
-      .hologram-container {
-        position: relative;
+      .hologram-placeholder {
         width: 300px;
         height: 300px;
-        margin-bottom: 40px;
         border-radius: 50%;
-        overflow: hidden;
-        box-shadow: 0 0 50px #00fdfd;
-      }
-
-      .hologram video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+        margin-bottom: 40px;
+        background: radial-gradient(circle, #ffffff 20%, #00fdfd 60%, transparent 100%);
+        box-shadow: 0 0 60px #00fdfd;
       }
 
       button {
@@ -58,13 +51,12 @@
     </style>
   </head>
   <body>
-    <div class="hologram-container" id="holo">
-      <video src="/crack.mp4" autoplay loop muted playsinline></video>
-    </div>
+    <div class="hologram-placeholder"></div>
 
     <button onclick="connectWallet()">Conectar Wallet</button>
     <div id="status"><span style="color: red">🔴 Desconectado</span></div>
     <div id="fragmentCount">Fragmentos vivos: 1000</div>
+
     <button onclick="mintFragment()">Mintear fragmento (0.12 ETH)</button>
     <button onclick="burnFragment()">Quemar fragmento</button>
 
