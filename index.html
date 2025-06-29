@@ -1,111 +1,138 @@
-
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TEN.IO Fragment</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TEN.IO Fragment (Sepolia)</title>
   <style>
-    * {
+    body {
       margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'DM Sans', sans-serif;
+      background: #ffffff;
+      font-family: 'Helvetica Neue', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #000;
     }
 
-    body {
-      background: radial-gradient(ellipse at center, #0c0c0c 0%, #000000 100%);
-      color: #ffffff;
-      min-height: 100vh;
+    .status {
+      margin-top: 10px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    .button {
+      padding: 12px 20px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      background: black;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .button:hover {
+      background: #333;
+    }
+
+    .hologram {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      box-shadow: 0 0 40px cyan, 0 0 80px cyan;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-    }
-
-    h1 {
-      font-size: 1.6rem;
-      margin-bottom: 1.5rem;
-      color: #cccccc;
-      letter-spacing: 1px;
-    }
-
-    .holo-sphere {
-      width: 240px;
-      height: 240px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 1.5px solid #00f0ff;
-      background: radial-gradient(circle at center, rgba(0,255,255,0.1), rgba(0,0,0,0.7));
-      box-shadow:
-        0 0 20px rgba(0,255,255,0.3),
-        inset 0 0 25px rgba(0,255,255,0.2);
-      animation: pulse 3s infinite ease-in-out, float 8s ease-in-out infinite;
-      perspective: 1000px;
-      cursor: pointer;
-      transform-style: preserve-3d;
-      transition: transform 0.5s ease;
-    }
-
-    .holo-sphere:hover {
-      transform: scale(1.07) rotateY(10deg) rotateX(4deg);
-      box-shadow:
-        0 0 35px #0ff,
-        0 0 80px rgba(0,255,255,0.6),
-        inset 0 0 40px rgba(0,255,255,0.4);
+      margin-bottom: 30px;
+      animation: pulse 2s infinite alternate;
     }
 
     @keyframes pulse {
-      0%, 100% {
-        box-shadow: 0 0 15px #0ff, inset 0 0 15px rgba(0,255,255,0.2);
+      from {
+        box-shadow: 0 0 30px cyan;
       }
-      50% {
-        box-shadow: 0 0 45px #0ff, inset 0 0 45px rgba(0,255,255,0.4);
+      to {
+        box-shadow: 0 0 60px cyan, 0 0 90px cyan;
       }
     }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-12px); }
-    }
-
-    .holo-sphere video {
-      width: 100%;
-      height: 100%;
+    video {
+      width: 85%;
+      height: 85%;
+      border-radius: 50%;
       object-fit: cover;
-      filter: brightness(1.2) contrast(1.3) drop-shadow(0 0 10px #00f0ff);
-      transform: rotateY(8deg);
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <h1>Fragmento disponible para ser minteado</h1>
-  <div class="holo-sphere" onclick="mintFragment()" onmouseenter="playHolo()" onmouseleave="pauseHolo()">
-    <video id="holoVideo" preload="auto" loop muted>
-      <source src="https://gateway.pinata.cloud/ipfs/bafybeigftt7kun6fq3hlpahoxdnxy2nn54gjhkdgkyhch2yzilqfpet27a" type="video/mp4">
-      Tu navegador no soporta video.
+  <div class="hologram">
+    <video autoplay muted loop>
+      <source src="https://gateway.pinata.cloud/ipfs/bafybeigftt7kun6fq3hlpahoxdnxy2nn54gjhkdgkyhch2yzilqfpet27a" type="video/mp4" />
+      Your browser does not support the video tag.
     </video>
   </div>
 
+  <button class="button" onclick="connectWallet()">Conectar Wallet</button>
+  <div id="status" class="status">🔴 Desconectado</div>
+
+  <button class="button" onclick="mintFragment()">Mintear fragmento (0.12 ETH)</button>
+  <button class="button" onclick="burnFragment()">Quemar fragmento</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
   <script>
-    const holo = document.getElementById("holoVideo");
+    const CONTRACT_ADDRESS = "0xD360714b72796dC812A0c177B9Be45022D1f3f5B";
+    const ABI = [
+      "function mintFragment(string memory uri) external payable",
+      "function burn(uint256 tokenId) external",
+      "function ownerOf(uint256 tokenId) view returns (address)",
+      "function tokenURI(uint256 tokenId) view returns (string)"
+    ];
 
-    function playHolo() {
-      holo.muted = false;
-      holo.volume = 1.0;
-      holo.play();
+    let provider;
+    let signer;
+    let contract;
+
+    async function connectWallet() {
+      if (window.ethereum) {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer = provider.getSigner();
+        contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+
+        const address = await signer.getAddress();
+        document.getElementById('status').innerHTML = `🟢 ${address.substring(0,6)}...${address.slice(-4)}`;
+      } else {
+        alert("MetaMask no está instalada");
+      }
     }
 
-    function pauseHolo() {
-      holo.pause();
-      holo.currentTime = 0;
-      holo.muted = true;
+    async function mintFragment() {
+      const ipfsURI = prompt("Introduce la URI de IPFS del fragmento:");
+      if (!ipfsURI) return;
+      try {
+        const tx = await contract.mintFragment(ipfsURI, { value: ethers.utils.parseEther("0.12") });
+        await tx.wait();
+        alert("✅ Fragmento minteado!");
+      } catch (err) {
+        alert("Error en mint: " + err.message);
+      }
     }
 
-    function mintFragment() {
-      const uri = "https://gateway.pinata.cloud/ipfs/bafybeigftt7kun6fq3hlpahoxdnxy2nn54gjhkdgkyhch2yzilqfpet27a";
-      window.mintFragment && window.mintFragment(uri);
+    async function burnFragment() {
+      const tokenId = prompt("Introduce el ID del token a quemar:");
+      if (!tokenId) return;
+      try {
+        const tx = await contract.burn(tokenId);
+        await tx.wait();
+        alert("🔥 Fragmento quemado y 0.10 ETH devueltos.");
+      } catch (err) {
+        alert("Error en burn: " + err.message);
+      }
     }
   </script>
 </body>
