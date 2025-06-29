@@ -86,27 +86,29 @@
 
     <audio id="hover-sound" src="hologram.mp3" preload="auto"></audio>
 
-    <script>
-      const holo = document.getElementById("holo");
-      const audio = document.getElementById("hover-sound");
+<script>
+  const holo = document.getElementById('holo');
+  const audio = document.getElementById('hover-sound');
 
-      holo.addEventListener("mouseenter", () => {
-        audio.currentTime = 0;
-        audio.play();
-      });
+  holo.addEventListener("mouseenter", () => {
+    if (audio.readyState >= 2) {
+      audio.currentTime = 0;
+      audio.play().catch(e => console.warn("Autoplay blocked:", e));
+    }
+  });
 
-      function connectWallet() {
-        document.getElementById("status").innerHTML =
-          '<span style="color: green">🟢 0x75DA...C455</span>';
-      }
+  function connectWallet() {
+    document.getElementById("status").innerHTML =
+      '<span style="color: green">🟢 0x75DA...C455</span>';
+  }
 
-      function mintFragment() {
-        alert("Mint enviado a Sepolia (demo). Confirmar en MetaMask.");
-      }
+  function mintFragment() {
+    alert("Mint enviado a Sepolia (demo). Confirmar en MetaMask.");
+  }
 
-      function burnFragment() {
-        alert("Burn enviado a Sepolia (demo). Confirmar en MetaMask.");
-      }
-    </script>
+  function burnFragment() {
+    alert("Burn enviado a Sepolia (demo). Confirmar en MetaMask.");
+  }
+</script>
   </body>
 </html>
