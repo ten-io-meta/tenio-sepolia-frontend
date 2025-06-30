@@ -10,3 +10,4 @@ yarn-error.log*
 
 # dotenv environment variables
 .env
+.vercel
